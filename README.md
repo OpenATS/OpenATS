@@ -16,7 +16,7 @@
 
 搭建过程：
 
-所有程序和代码，已经分享到我的百度网盘，地址：http://pan.baidu.com/s/1i5jR1I1
+所有程序和代码，已经分享到我的百度网盘，地址：http://pan.baidu.com/s/1jHYw80u
 
 
 1，把Arduino驱动程序arduino-1.6.8-windows.exe和虚拟串口软件驱动CH341SER.EXE下载安装，把AccelStepper库下载解压缩，解压缩后的整个AccelStepper文件夹拷贝到安装后Arduino程序的libraries文件夹下
