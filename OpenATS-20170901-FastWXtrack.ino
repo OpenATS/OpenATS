@@ -330,11 +330,11 @@ String usbdata = "";
       delay(2000);
       power = 1; 
       power_tmp = 0;
-      gotoangle_x = 0;
-      gotoangle_y = 0;
-      _angle_1 = true;
-      _angle_2 = true;
-      angle_x = 0;
+      //gotoangle_x = 0;
+      //gotoangle_y = 0;
+      //_angle_1 = true;
+      //_angle_2 = true;
+      //angle_x = 0;
 
   }
  else if(usbdata.startsWith("S"))                                 //检测是否为天线停止命令“S”   
