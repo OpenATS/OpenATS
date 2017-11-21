@@ -172,9 +172,9 @@ void setup()
    Serial.println("+           Like this : 35.56 45.23                +");
    Serial.println("+          Send '0' or space to back home          +"); 
    Serial.println("+          Send 'W' to wakeup the antenna          +"); 
-   Serial.println("+        Send 'S' to shutdown the antenna         +"); 
-   Serial.println("+   Send 'X 52.4' will set 52.4 angle to AZ's 0   +");
-   Serial.println("+   Send 'Y 30.6' will set 30.6 angle to EL's 0   +");
+   Serial.println("+        Send 'S' to shutdown the antenna          +"); 
+   Serial.println("+   Send 'X 52.4' will set 52.4 angle to AZ's 0    +");
+   Serial.println("+   Send 'Y 30.6' will set 30.6 angle to EL's 0    +");
    Serial.println("+                 GOOD LUCK !!!                    +");
    Serial.println("+--------------------------------------------------+");
  //Serial.println("+        ____      _    ____ ___ _____ _           +");
