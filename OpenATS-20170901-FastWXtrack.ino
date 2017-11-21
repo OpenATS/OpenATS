@@ -176,11 +176,11 @@ void setup()
    Serial.println("+   Input 'Y 30.6' will set 30.6 angle to EL's 0   +");
    Serial.println("+                 GOOD LUCK !!!                    +");
    Serial.println("+--------------------------------------------------+");
-  //Serial.println("+        ____      _    ____ ___ _____ _           +");
-  //Serial.println("+       |  _ \    / \  / ___|_ _| ____| |          +");
-  //Serial.println("+       | |_) |  / _ \ \___ \| ||  _| | |          +");
-  //Serial.println("+       |  _ <  / ___ \ ___) | || |___| |___       +");
-  //Serial.println("+       |_| \_\/_/   \_\____/___|_____|_____|      +");
+ //Serial.println("+        ____      _    ____ ___ _____ _           +");
+ //Serial.println("+       |  _ \    / \  / ___|_ _| ____| |          +");
+ //Serial.println("+       | |_) |  / _ \ \___ \| ||  _| | |          +");
+ //Serial.println("+       |  _ <  / ___ \ ___) | || |___| |___       +");
+ //Serial.println("+       |_| \_\/_/   \_\____/___|_____|_____|      +");
    Serial.println("+                  Version 2.0                     +");
    Serial.println("+--------------------------------------------------+");
    Serial.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -207,10 +207,10 @@ void setup()
 */ 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-void loop()                                          //主程序循环
+void loop()                                                        //主程序循环
 {
 
-starttime = millis();                                //计算程序循环一次耗时
+starttime = millis();                                              //计算程序循环一次耗时
 //power(&pt2);
 //下面为初始化各种变量，请勿移动位置
 char a[10]={0};
@@ -257,12 +257,12 @@ String usbdata = "";
 //自动追踪开始
  if (usbdata.length() > 11)
    {
-      const char *usb=usbdata.c_str();                            //将string数据转成字符串数据
+      const char *usb=usbdata.c_str();                                 //将string数据转成字符串数据
     //Serial.println(usb);
 
     //下面为追踪协议的选择，根据使用控制软件不同修改
-    //sscanf(usb, "AZ%s EL%s\#13",&a, &b);                        //WXtrack 的Easycomm协议
-      sscanf(usb, "AZ:%[^','],EL:%s",&a, &b);                     // split out AZ and EL yes---DDE client 
+    //sscanf(usb, "AZ%s EL%s\#13",&a, &b);                             //WXtrack 的Easycomm协议
+      sscanf(usb, "AZ:%[^','],EL:%s",&a, &b);                          // split out AZ and EL yes---DDE client 
     //sscanf(usb, "UP0 DN%s UMFM-N DMFM-N AZ%s EL%s SNNOAA-%s\#0\#13\#10",&g,&a,&b,&h);    //no split  ---DDE client
       
       tmp_a = a;                                                
@@ -273,26 +273,27 @@ String usbdata = "";
     //Serial.println(X); 
     //Serial.println(Y); 
       
-      if( abs(X-angle_x_tmp) > 359 && angle_x == 0)                   //检测是否是从0度过渡到359度，不至于方位角倒转一圈
+      if( X - angle_x_tmp > 359 && angle_x == 0 )                     //检测是否是从0度过渡到359度，不至于方位角倒转一圈
          {
              angle_x = -1;
           } 
-      else if( X-angle_x_tmp < -210 && angle_x == -1)                 //检测是否是WXtrack的park antenna命令在追踪时直接回零的条件
+      else if( angle_x_tmp - X > 2 && angle_x == -1 )                 //检测是否是WXtrack的park antenna命令,0--> 359.x
          {
              angle_x = 0;      
           }
-      else if( angle_x_tmp - X > 2 && angle_x == 1)                   //检测是否是WXtrack的park antenna命令在追踪时直接回零的条件
+      else if( angle_x_tmp - X > 2 && angle_x == 1 )                  //检测是否是WXtrack的park antenna命令,359.x--> 0 
          {  
              angle_x = 0;
           }
-      else if( abs(angle_x_tmp - X) > 359 && angle_x == 0)             //检测是否是从359度过渡到0度，不至于方位角倒转一圈
+      else if( X - angle_x_tmp < -359 && angle_x == 0 )               //检测是否是从359度过渡到0度，不至于方位角倒转一圈
          {
-             angle_x = 1;         
+             angle_x = 1;           
           }
+
 
       angle_x_tmp = X;                                                //重新赋值新的比较角度值
       
-      if( Y > 0 )                                                    //仰角大于 0度时，开始运转
+      if( Y > 0 )                                                     //仰角大于 0度时，开始运转
         {   
             power_tmp = 0;         
             gotoangle_x = X;
@@ -300,7 +301,7 @@ String usbdata = "";
             _angle_1 = true;   
             _angle_2 = true;            
         }      
-      else if ( Y > -7 && Y < 0 || X > 510 || X < -150)              //天线机械装置极限限制
+      else if ( Y > -7 && Y < 0 || X > 510 || X < -150)               //天线机械装置极限限制
         {  
             power_tmp = 0;          
             gotoangle_x = 0;
@@ -312,7 +313,7 @@ String usbdata = "";
         }
       else if ( Y < -7 && power == 1 )
         {
-            power_tmp = 1;                                         //激活天线断电程序
+            power_tmp = 1;                                           //激活天线断电程序
             gotoangle_x = 0;
             gotoangle_y = 0;
             _angle_1 = true;
@@ -378,7 +379,7 @@ else if ( usbdata.length() > 0 && power == -1 )
  
  else if( usbdata.length() > 0 && power == 1)
   {                                                              
-    if(usbdata.startsWith("X"))                     //检测是否为校准方位角命令
+    if(usbdata.startsWith("X"))                                  //检测是否为校准方位角命令
       { 
       const char *usb=usbdata.c_str();                          
       sscanf(usb, "X%s",&e);
@@ -388,7 +389,7 @@ else if ( usbdata.length() > 0 && power == -1 )
       _angle_1 = true;
       //_angle_2 = true;  
       }
-    else if(usbdata.startsWith("Y"))                //检测是否为校准仰角命令
+    else if(usbdata.startsWith("Y"))                             //检测是否为校准仰角命令
       { 
       const char *usb=usbdata.c_str();                          
       sscanf(usb, "Y%s",&f);
@@ -437,16 +438,16 @@ else if ( usbdata.length() > 0 && power == -1 )
 //方位角旋转角度转换
 
    if (_angle_1)     
-     {
-       if( angle_x == -1 && X > 210)                              //判断是否是从0度过渡到359.x度
+     { 
+       if( angle_x == -1 )                                       //判断是否是从0度过渡到359.x度
         {       
         stepper1.moveTo((360+(-gotoangle_x)) * AZFACTOR);   
         }
-       else if( angle_x == 1 && X < 150)                          //判断方位角从359.x过渡到0度   
+       else if( angle_x == 1 )                                   //判断方位角从359.x过渡到0度   
         {    
          stepper1.moveTo(((-gotoangle_x)-360) * AZFACTOR);          
         }
-       else if( angle_x == 0 && X > -150 && X < 450)                      
+       else if( angle_x == 0 )                      
         {       
         stepper1.moveTo((-gotoangle_x) * AZFACTOR);   
         }                                                 
