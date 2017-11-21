@@ -156,24 +156,21 @@ void setup()
    stepper2.setMaxSpeed(MAXSPEED_2);
    stepper1.setAcceleration(ACCELERATION_1);
    stepper2.setAcceleration(ACCELERATION_2);
-   
-
-  //stepper1.setSpeed(8000.0);
   //stepper2.setSpeed(8000.0);
   
    Serial.begin(9600);
-   
+
    Serial.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
    Serial.println("+    The Open Auto Tracking System is online !     +");
    Serial.println("+                 (FastWXtrack)                    +");
    Serial.println("+        Use 'XX YY' to control the antenna        +");
    Serial.println("+               XX is AZ, YY is EL                 +");
    Serial.println("+           Like this : 35.56 45.23                +");
-   Serial.println("+          Input '0'or space to back home          +"); 
-   Serial.println("+         Input 'W' to wakeup the antenna          +"); 
-   Serial.println("+        Input 'S' to shutdown the antenna         +"); 
-   Serial.println("+   Input 'X 52.4' will set 52.4 angle to AZ's 0   +");
-   Serial.println("+   Input 'Y 30.6' will set 30.6 angle to EL's 0   +");
+   Serial.println("+          Send '0' or space to back home          +"); 
+   Serial.println("+          Send 'W' to wakeup the antenna          +"); 
+   Serial.println("+        Send 'S' to shutdown the antenna         +"); 
+   Serial.println("+   Send 'X 52.4' will set 52.4 angle to AZ's 0   +");
+   Serial.println("+   Send 'Y 30.6' will set 30.6 angle to EL's 0   +");
    Serial.println("+                 GOOD LUCK !!!                    +");
    Serial.println("+--------------------------------------------------+");
  //Serial.println("+        ____      _    ____ ___ _____ _           +");
@@ -184,6 +181,9 @@ void setup()
    Serial.println("+                  Version 2.0                     +");
    Serial.println("+--------------------------------------------------+");
    Serial.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+   
+
    
 }
 //////////////////////////////////////////////////////////////////////////////////////////
