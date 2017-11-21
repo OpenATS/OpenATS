@@ -170,18 +170,18 @@ void setup()
    Serial.println("+        Use 'XX YY' to control the antenna        +");
    Serial.println("+               XX is AZ, YY is EL                 +");
    Serial.println("+           Like this : 35.56 45.23                +");
-   Serial.println("+          Input '0'or space to back home          +"); 
-   Serial.println("+         Input 'W' to wakeup the antenna          +"); 
-   Serial.println("+        Input 'S' to shutdown the antenna         +"); 
-   Serial.println("+   Input 'X 52.4' will set 52.4 angle to AZ's 0   +");
-   Serial.println("+   Input 'Y 30.6' will set 30.6 angle to EL's 0   +");
+   Serial.println("+          Send '0' or space to back home          +"); 
+   Serial.println("+          Send 'W' to wakeup the antenna          +"); 
+   Serial.println("+        Send 'S' to shutdown the antenna         +"); 
+   Serial.println("+   Send 'X 52.4' will set 52.4 angle to AZ's 0   +");
+   Serial.println("+   Send 'Y 30.6' will set 30.6 angle to EL's 0   +");
    Serial.println("+                 GOOD LUCK !!!                    +");
    Serial.println("+--------------------------------------------------+");
-  //Serial.println("+        ____      _    ____ ___ _____ _           +");
-  //Serial.println("+       |  _ \    / \  / ___|_ _| ____| |          +");
-  //Serial.println("+       | |_) |  / _ \ \___ \| ||  _| | |          +");
-  //Serial.println("+       |  _ <  / ___ \ ___) | || |___| |___       +");
-  //Serial.println("+       |_| \_\/_/   \_\____/___|_____|_____|      +");
+ //Serial.println("+        ____      _    ____ ___ _____ _           +");
+ //Serial.println("+       |  _ \    / \  / ___|_ _| ____| |          +");
+ //Serial.println("+       | |_) |  / _ \ \___ \| ||  _| | |          +");
+ //Serial.println("+       |  _ <  / ___ \ ___) | || |___| |___       +");
+ //Serial.println("+       |_| \_\/_/   \_\____/___|_____|_____|      +");
    Serial.println("+                  Version 2.0                     +");
    Serial.println("+--------------------------------------------------+");
    Serial.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -258,12 +258,12 @@ String usbdata = "";
 //自动追踪开始
  if (usbdata.length() > 11)
    {
-      const char *usb=usbdata.c_str();                               //将string数据转成字符串数据
+      const char *usb=usbdata.c_str();                                //将string数据转成字符串数据
       //Serial.println(usb);
 
       //下面为追踪协议的选择，根据使用控制软件不同修改
-      sscanf(usb, "AZ%s EL%s\#13",&a, &b);                           //WXtrack 的Easycomm协议
-      //sscanf(usb, "AZ:%[^','],EL:%s",&a, &b);                      // split out AZ and EL yes---DDE client 
+      sscanf(usb, "AZ%s EL%s\#13",&a, &b);                            //WXtrack 的Easycomm协议
+      //sscanf(usb, "AZ:%[^','],EL:%s",&a, &b);                       // split out AZ and EL yes---DDE client 
       //sscanf(usb, "UP0 DN%s UMFM-N DMFM-N AZ%s EL%s SNNOAA-%s\#0\#13\#10",&g,&a,&b,&h);    //no split  ---DDE client  
       tmp_a = a;                                                
       tmp_b = b;                                                 
@@ -272,22 +272,22 @@ String usbdata = "";
       Y = tmp_b.toFloat();                                      
       //Serial.println(X); 
       //Serial.println(Y); 
-      
-      if( abs(X-angle_x_tmp) > 359 && angle_x == 0)                   //检测是否是从0度过渡到359度，不至于方位角倒转一圈
+     
+      if( X - angle_x_tmp > 359 && angle_x == 0 )                     //检测是否是从0度过渡到359度，不至于方位角倒转一圈
          {
              angle_x = -1;
           } 
-      else if( X-angle_x_tmp < -210 && angle_x == -1)                 //检测是否是WXtrack的park antenna命令在追踪时直接回零的条件
+      else if( angle_x_tmp - X > 2 && angle_x == -1 )                 //检测是否是WXtrack的park antenna命令,0--> 359.x
          {
              angle_x = 0;      
           }
-      else if( angle_x_tmp - X > 2 && angle_x == 1)                   //检测是否是WXtrack的park antenna命令在追踪时直接回零的条件
+      else if( angle_x_tmp - X > 2 && angle_x == 1 )                  //检测是否是WXtrack的park antenna命令,359.x--> 0 
          {  
              angle_x = 0;
           }
-      else if( abs(angle_x_tmp - X) > 359 && angle_x == 0)            //检测是否是从359度过渡到0度，不至于方位角倒转一圈
+      else if( X - angle_x_tmp < -359 && angle_x == 0 )               //检测是否是从359度过渡到0度，不至于方位角倒转一圈
          {
-             angle_x = 1;         
+             angle_x = 1;           
           }
 
       angle_x_tmp = X;                                                //重新赋值新的比较角度值
@@ -410,19 +410,20 @@ else if ( usbdata.length() > 0 && power == -1 )
   }
                                         
 //方位角旋转角度转换
+//My AZ motor is converse
 
    if (_angle_1)     
      {
-       if( angle_x == -1 && X > 210)                              //判断是否是从0度过渡到359.x度
+       if( angle_x == -1 )                              //判断是否是从0度过渡到359.x度
         {       
         stepper1.moveTo((360+(-gotoangle_x)) * AZFACTOR);   
         }
-       else if( angle_x == 1 && X < 150)                          //判断方位角从359.x过渡到0度   
+       else if( angle_x == 1 )                          //判断方位角从359.x过渡到0度   
         {    
          stepper1.moveTo(((-gotoangle_x)-360) * AZFACTOR);          
         }
-       else if( angle_x == 0 && X > -150 && X < 450)                      
-        {       
+       else if( angle_x == 0 )                      
+        {    
         stepper1.moveTo((-gotoangle_x) * AZFACTOR);   
         }                                                 
      }
