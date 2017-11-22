@@ -342,7 +342,7 @@ String usbdata = "";
       //angle_x = 0;
 
   }
- else if (usbdata.startsWith("U") && power == 0 && power_tmp == -1 )                                 //检测是否为天线解除锁定命令“W”
+ else if ( usbdata.startsWith("U") && power == 0 && power_tmp == -1 )                                 //检测是否为天线解除锁定命令“W”
   {     
       Serial.println("Antenna is UNLOACKED, Now please wait 2 senconds !!");
       Serial.println("---------------------------------------------------"); 
@@ -355,7 +355,7 @@ String usbdata = "";
       Serial.println("-----------");
 
   }
- else if (usbdata.startsWith("S"))                                                                   //检测是否为天线停止命令“S”   
+ else if ( usbdata.startsWith("S") )                                                                   //检测是否为天线停止命令“S”   
   {
       power_tmp = 1; 
       gotoangle_x = 0;
@@ -364,11 +364,11 @@ String usbdata = "";
       _angle_2 = true;
       angle_x = 0;  
   } 
- else if (usbdata.startsWith("L"))                                                                   //检测是否为天线锁定命令“L”
+ else if ( usbdata.startsWith("L") )                                                                   //检测是否为天线锁定命令“L”
   {
       power_tmp = -1;         
   } 
- else if ( usbdata.length() > 0 && power == 0 && power_tmp == 1 )
+ else if ( usbdata.length() > 0 && power_tmp == 1 )
   {
          Serial.println("#############################################################"); 
          Serial.println("The antenna's power is OFF , Please send 'W' to wake him up !");
@@ -381,9 +381,9 @@ String usbdata = "";
          Serial.println("######################################################"); 
   }
  
- else if ( usbdata.length() > 0 && power == 1)
+ else if ( usbdata.length() > 0 && power == 1 && power_tmp == 0 )
   {                                                              
-    if (usbdata.startsWith("X"))                     //检测是否为校准方位角命令
+    if ( usbdata.startsWith("X") )                     //检测是否为校准方位角命令
       { 
       const char *usb=usbdata.c_str(); 
       sscanf(usb, "X%s",&e);
@@ -393,7 +393,7 @@ String usbdata = "";
       _angle_1 = true;
       //_angle_2 = true;  
       }
-    else if (usbdata.startsWith("Y"))                //检测是否为校准仰角命令
+    else if ( usbdata.startsWith("Y") )                //检测是否为校准仰角命令
       { 
       const char *usb=usbdata.c_str();
       sscanf(usb, "Y%s",&f);
@@ -422,7 +422,7 @@ String usbdata = "";
        {
           Serial.println("Wrong angle of AZ !");
        }
-      if (Y > -20 && Y < 100)       
+      if ( Y > -20 && Y < 100 )       
        {
           gotoangle_y = Y;
           Serial.print("EL= ");
@@ -471,8 +471,7 @@ if ( power_tmp == 1 )                                             //执行天线
   {
     //looptime = stoptime - starttime;
     accumulate += looptime;
-    //Serial.println(accumulate);                                 //打印程序运行一次需要的时间，实测50多微秒
-    power = 0;                      
+    //Serial.println(accumulate);                                 //打印程序运行一次需要的时间，实测50多微秒                    
     if( accumulate > 60000 )
         {
           //Serial.println(accumulate);
@@ -481,6 +480,7 @@ if ( power_tmp == 1 )                                             //执行天线
           Serial.println("Antenna's power is OFF!");
           Serial.println("#######################");
           accumulate = 0;                                        //重置时间计数器
+          power = 0;  
         }
   }
 
