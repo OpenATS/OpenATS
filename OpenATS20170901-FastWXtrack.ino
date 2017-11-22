@@ -443,15 +443,15 @@ String usbdata = "";
 
    if (_angle_1)     
      {
-       if ( angle_x == -1 && X > 210)                              //判断是否是从0度过渡到359.x度
+       if ( angle_x == -1 )                              //判断是否是从0度过渡到359.x度
         {       
         stepper1.moveTo((360+(-gotoangle_x)) * AZFACTOR);   
         }
-       else if ( angle_x == 1 && X < 150)                          //判断方位角从359.x过渡到0度   
+       else if ( angle_x == 1 )                          //判断方位角从359.x过渡到0度   
         {    
          stepper1.moveTo(((-gotoangle_x)-360) * AZFACTOR);          
         }
-       else if ( angle_x == 0 && X > -150 && X < 450)                      
+       else if ( angle_x == 0 )                      
         {       
         stepper1.moveTo((-gotoangle_x) * AZFACTOR);   
         }                                                 
