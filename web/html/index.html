@@ -1,0 +1,292 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>OpenATS</title>
+    <link rel="stylesheet" href="assets/css/loading.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+<!-- loading...动画 -->
+<div class="app-loading" id='app-loading'>
+    <div class="loading-spinner">
+        <svg class="circular" viewBox="25 25 50 50">
+            <circle class="path" cx="50" cy="50" r="20" fill="none"/>
+        </svg>
+        <p class="text">正在加载...</p>
+    </div>
+</div>
+
+<div>
+    <div class="openats">
+        <div class="title">OpenATS 天线管理平台</div>
+    </div>
+    <div id="app" class="openats-app">
+        <div v-for="(item, key) in items" class="app-city">
+            <div class="ac-title">{{ item.text }}</div>
+            <div class="ac-gauges" :id="key" style="width:100%;height:300px"></div>
+        </div>
+
+        <div class="openats-current-time">GPS 时间 (UTC {{ nowDate + ' ' + nowTime }})</div>
+        <div class="openats-title">
+            <h1>低轨接收站分布</h1>
+            <h2>www.openats.cn</h2>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="assets/js/vue.min.js"></script>
+<script type="text/javascript" src="assets/js/jquery.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js?_v_=1594407681985"></script>
+<script type="text/javascript">
+    let myChart = [];
+    let app = new Vue({
+        el: '#app',
+        data () {
+            return {
+                nowDate: "",    // 当前日期
+                nowTime: "",    // 当前时间
+                items : []
+            }
+        },
+        mounted () {
+            let that = this;
+            that.currentTime();
+
+            // 定时修改 value 值
+            that.timer = setInterval(() => {
+                that.value = Math.ceil((Math.random() * 100));
+
+                setInterval(function () {
+                    $.each(myChart,function(key,item){
+                        let option =  item.charts.getOption();
+                            option.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+                            option.series[1].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+                        item.charts.setOption(option, true);
+                    });
+                    
+                },2000);
+            }, 1000);
+
+            setTimeout(function(){
+                that.init();
+            },1000);
+
+            //获取内层指示刻度的颜色
+            //this.getColorList()
+            //设置仪表盘图的 size
+            //this.setSize()
+        },
+        beforeDestroy () {
+            clearInterval(this.timer)
+        },
+        methods: {
+            //设置当前时间
+            currentTime() {
+                setInterval(this.getNow, 500);
+            },
+            getNow(){
+                var _this = this;
+                let yy = new Date().getFullYear();
+                let mm = new Date().getMonth() + 1;
+                let dd = new Date().getDate();
+                let week = new Date().getDay();
+                let hh = new Date().getHours();
+                let mf =
+                    new Date().getMinutes() < 10
+                        ? "0" + new Date().getMinutes()
+                        : new Date().getMinutes();
+                let ms =
+                    new Date().getSeconds() < 10
+                        ? "0" + new Date().getSeconds()
+                        : new Date().getSeconds();
+                _this.nowTime = hh + ":" + mf + ":" + ms;
+                _this.nowDate = yy + "/" + mm + "/" + dd;
+            },
+            init(){
+                var that = this;
+
+                $.each(that.items,function(key,item){
+                    let $item = {
+                        charts: echarts.init(document.getElementById(key)),          // chart 对象实例
+                        id: key,            // 为了标示 id 不同
+                    }
+                    myChart.push($item);
+                });
+
+                this.$nextTick(() => {
+                    $.each(myChart,function(key,item){
+                        let option = {
+                            series: [
+                                {
+                                    name: '业务指标',
+                                    type: 'gauge',
+                                    //表盘数值
+                                    clockwise:true,
+                                    min: 0,
+                                    max: 360,
+                                    radius: '60%',
+                                    center: ['25%', '50%'], 
+                                    axisLine: {             // 坐标轴线
+                                        lineStyle: {        // 属性lineStyle控制线条样式
+                                            color: [[1, '#fff']],
+                                            width: 2,
+                                            length : 20
+                                        },
+                                        length:10
+                                    },
+                                    splitLine:{
+                                        lineStyle: {        // 属性lineStyle控制线条样式
+                                            color: '#fff',
+                                            width: 1
+                                        },
+                                        length:10
+                                    },
+                                    //刻度标签
+                                    axisLabel: {
+                                        show: false 
+                                    },
+                                    //表盘角度
+                                    startAngle: 89.95,
+                                    endAngle: -629.95,
+                                    splitNumber: 36,
+                                    splitLine: {           // 坐标轴大标记
+                                        length: 15,        // 属性length控制线长
+                                        lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                                            color: [[1, '#fff']],
+                                            width: 1
+                                        }
+                                    },
+                                    pointer: {                  // 仪表盘指针。
+                                        show: true,             // 是否显示指针,默认 true。
+                                        length: "100%",         // 指针长度，可以是绝对数值，也可以是相对于半径的百分比,默认 80%。
+                                        width: 2,               // 指针宽度,默认 8。
+                                    },
+                                    itemStyle: {                // 仪表盘指针样式。
+                                        color: "white",         // 指针颜色，默认(auto)取数值所在的区间的颜色
+                                        opacity: 1,             // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。
+                                        borderWidth: 0,         // 描边线宽,默认 0。为 0 时无描边。
+                                        borderType: "solid",    // 柱条的描边类型，默认为实线，支持 'solid', 'dashed', 'dotted'。
+                                        borderColor: "#000",    // 图形的描边颜色,默认 "#000"。支持的颜色格式同 color，不支持回调函数。
+                                        shadowBlur: 1,          // (发光效果)图形阴影的模糊大小。该属性配合 shadowColor,shadowOffsetX, shadowOffsetY 一起设置图形的阴影效果。 
+                                        shadowColor: "#fff",    // 阴影颜色。支持的格式同color。
+                                    },
+                                    detail: {formatter: '{value}'},
+                                    data: [{value: 1, name: '方位角'}],
+                                    //表盘名字
+                                    title: {color: "#FF00FF",fontSize: 16}
+                                },{
+                                    name: '业务指标',
+                                    type: 'gauge',
+                                    //表盘数值
+                                    clockwise:true,
+                                    min: 0,
+                                    max: 90,
+                                    //表盘角度
+                                    startAngle: 180,
+                                    endAngle: 90,
+                                    splitNumber: 9,
+                                    center: ['80%', '50%'],   
+                                    //表盘半径
+                                    radius: '60%',
+                                    axisLine: {             // 坐标轴线
+                                        lineStyle: {        // 属性lineStyle控制线条样式
+                                            color: [[1, '#fff']],
+                                            width: 2,
+                                            length : 20
+                                        },
+                                        length:10
+                                    },
+                                    splitLine:{
+                                        lineStyle: {        // 属性lineStyle控制线条样式
+                                            color: '#fff',
+                                            width: 1
+                                        },
+                                        length:10
+                                    },
+                                    //刻度标签
+                                    axisLabel: {
+                                        show: false 
+                                    },
+                                    //表盘角度
+                                    splitLine: {           // 坐标轴大标记
+                                        length: 15,        // 属性length控制线长
+                                        lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                                            color: [[1, '#fff']],
+                                            width: 1
+                                        }
+                                    },
+                                    pointer: {                  // 仪表盘指针。
+                                        show: true,             // 是否显示指针,默认 true。
+                                        length: "100%",         // 指针长度，可以是绝对数值，也可以是相对于半径的百分比,默认 80%。
+                                        width: 2,               // 指针宽度,默认 8。
+                                    },
+                                    itemStyle: {                // 仪表盘指针样式。
+                                        color: "white",         // 指针颜色，默认(auto)取数值所在的区间的颜色
+                                        opacity: 1,             // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。
+                                        borderWidth: 0,         // 描边线宽,默认 0。为 0 时无描边。
+                                        borderType: "solid",    // 柱条的描边类型，默认为实线，支持 'solid', 'dashed', 'dotted'。
+                                        borderColor: "#000",    // 图形的描边颜色,默认 "#000"。支持的颜色格式同 color，不支持回调函数。
+                                        shadowBlur: 1,          // (发光效果)图形阴影的模糊大小。该属性配合 shadowColor,shadowOffsetX, shadowOffsetY 一起设置图形的阴影效果。 
+                                        shadowColor: "#fff",    // 阴影颜色。支持的格式同color。
+                                    },
+                                    detail: {formatter: '{value}'},
+                                    data: [{value: 1, name: '仰角'}],
+                                    //表盘名字
+                                    title: {color: "#0000FF",fontSize: 16}
+                                }
+                            ]
+                        };
+
+                        if (option && typeof option === "object") {
+                            item.charts.setOption(option, true);
+                        }
+                    });
+                })
+            }
+        },
+        computed: {
+        },
+    });
+
+    var ws = new WebSocket("ws://121.40.165.18:8800");   //建立连接
+
+    $(document).ready(function(){
+        $('#app-loading').hide();
+
+        //发送请求
+        ws.onopen = function()
+        {
+            console.log("服务器连接成功");
+            console.log(1);
+            //ws.send("OpenATS web service online");
+        };
+
+        ws.onmessage = function(resp){
+            ev = {
+                'QINGDAO' : {index: 1, text : '青岛站', data : '1:39.981384:116.485184:149.369705:28.067608:-53.176712'},
+                'KASHI' : {index: 2, text : '喀什站', data : '1:39.981384:116.485184:149.369705:28.067608:-53.176712'},
+                'BEIJING' : {index: 3, text : '北京站', data : '1:39.981384:116.485184:149.369705:28.067608:-53.176712'},
+                'CHONGQING' : {index: 4, text : '重庆站', data : '1:39.981384:116.485184:149.369705:28.067608:-53.176712'},
+                'GUNAGZHOU' : {index: 5, text : '广州站', data : '1:39.981384:116.485184:149.369705:28.067608:-53.176712'},
+                'SHUNAGYASHAN' : {index: 6, text : '双鸭山站', data : '1:39.981384:116.485184:149.369705:28.067608:-53.176712'}
+            };
+            app.items = ev;
+        };
+
+        ws.onclose = function(ev)
+        {
+            console.log("服务器断开连接");
+        };
+
+        ws.onerror = function(ev)
+        {
+            console.log("错误");
+            //重连
+            ws.initWebSocket();
+        };
+    });
+</script>
+</body>
+</html>

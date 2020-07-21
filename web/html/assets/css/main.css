@@ -1,0 +1,164 @@
+html{
+    width:100%;height:100%;
+}
+
+body{
+	padding:0;margin:0;
+	background:url('images/bg.jpg') no-repeat;
+	background-size:100% 100%;
+}
+
+body:before {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	background-color: rgba(0,0,0,.10);
+}
+
+.openats{
+	width:100%;height:100px;line-height:100px;
+	font-size:36px;
+	color:#fff;text-align:center;
+}
+
+.openats-app{
+    width:95%;margin:0 auto;
+}
+.openats-app .openats-title{
+    width:100%;height:32px;line-height:32px;text-align:center;
+}
+.openats-app .openats-title h1{
+    font-size:14px;font-weight:normal;padding:0;margin:0;
+}
+.openats-app .openats-title h2{
+    font-size:12px;font-weight:normal;padding:0;margin:0;
+    top:-12px;position:relative;
+}
+
+.openats-app .openats-current-time{
+    color:#fff;right:20px;top:20px;position:absolute;
+}
+
+.openats-app .app-city{
+    width:400px;height:240px;
+    border:1px solid #efefef;position:relative;
+}
+.openats-app .app-city .ac-title{
+    width:100%;height:42px;line-height:42px;
+    color:#fff;text-align:center;
+}
+.openats-app .app-city .ac-gauges{
+    top:-20px;left:10px;position:absolute;
+}
+
+.openats-app .app-city:nth-child(1){
+    left:20px;top:60px;position:absolute;
+}
+.openats-app .app-city:nth-child(2){
+    right:20px;top:60px;position:absolute;
+}
+.openats-app .app-city:nth-child(3){
+    left:20px;top:320px;position:absolute;
+}
+.openats-app .app-city:nth-child(4){
+    right:20px;top:320px;position:absolute;
+}
+.openats-app .app-city:nth-child(5){
+    left:20px;top:580px;position:absolute;
+}
+.openats-app .app-city:nth-child(6){
+    right:20px;top:580px;position:absolute;
+}
+.openats-app .app-city:nth-child(7){
+    left:20px;top:840px;position:absolute;
+}
+.openats-app .app-city:nth-child(8){
+    right:20px;top:840px;position:absolute;
+}
+
+.jhc-gauge-area {
+    width: 500px;
+    height: 500px;
+    position: relative;
+    background: #050842;
+}
+
+/* 仪表盘中圆形的环 */
+.jhc-gauge-circle {
+    width: 88%;
+    height: 88%;
+    border: 2px solid #509fef;
+    border-radius: 50%;
+    position: absolute;
+    top: 5%;
+    left: 6%;
+}
+
+/* 仪表盘的圆心 */
+.jhc-gauge-center {
+    width: 8%;
+    height: 8%;
+    border-radius: 50%;
+    position: absolute;
+    background-color: #509fef;
+    z-index: 20;
+    left: 46%;
+    top: 46%;
+    box-shadow: 0px 0px 10px 1px #000;
+}
+
+/* 仪表盘的背景图片 */
+.jhc-gauge-back {
+    width: 66%;
+    height: 66%;
+    border-radius: 50%;
+    position: absolute;
+    top: 4%;
+    left: -33%;
+    background: url(https://jhcan333.github.io/can-Share/image/clock/gaugeBack.png) no-repeat;
+    background-size: 95% 95%;
+    background-position: center center;
+}
+
+/* 仪表盘的指针 */
+.jhc-gauge-needle {
+    z-index: 5;
+    width: 8%;
+    height: 26%;
+    position: absolute;
+    left: 46%;
+    bottom: 50%;
+    transition:all 0.5s ease-in-out;
+    transform-origin: center bottom;
+    background: url(https://jhcan333.github.io/can-Share/image/clock/hourPoint.png) no-repeat;
+    background-size: 100% 100%;
+}
+
+/* 仪表盘的标题 */
+.jhc-gauge-title {
+    color: #fff;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    bottom: 3px;
+}
+
+/* 仪表盘的刻度 */
+.jhc-gauge-scale {
+    color: #fff;
+    z-index: 2;
+    text-align: center;
+    width: 10%;
+    height: 43%;
+    position: absolute;
+    left: 45%;
+    bottom: 50%;
+    transform-origin: center bottom;
+}
