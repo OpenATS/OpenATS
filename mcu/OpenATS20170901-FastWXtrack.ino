@@ -267,8 +267,7 @@ String usbdata = "";
                                           
       X = tmp_a.toFloat();                                             //进行浮点数转换
       Y = tmp_b.toFloat();                                      
-      //Serial.println(X); 
-      //Serial.println(Y);   
+      //Serial.println("AZ%.2f EL%.2f", X, Y); 
       
       if( X - angle_x_tmp > 359 && angle_x == 0 )                     //检测是否是从0度过渡到359度，不至于方位角倒转一圈
          {
@@ -413,8 +412,7 @@ String usbdata = "";
       if (X < 400 && X > -450)                                   //手动控制时，进行角度限制。
        {        
           gotoangle_x = X;
-          Serial.print("AZ= ");
-          Serial.println(X); 
+          Serial.print("AZ= %.2f", X);
        }
       else
        {
@@ -423,8 +421,7 @@ String usbdata = "";
       if ( Y > -20 && Y < 100 )       
        {
           gotoangle_y = Y;
-          Serial.print("EL= ");
-          Serial.println(Y);
+          Serial.print("EL= %.2f", Y);
        }
       else
        {
