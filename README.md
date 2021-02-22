@@ -1,10 +1,12 @@
 # OpenATS
-![Image text](https://github.com/OpenATS/OpenATS/blob/master/pictures/20172043.jpg)
+
 欢迎使用OpenATS自动追踪系统（Open Auto Tracking System）
+
 ![Image text](https://github.com/OpenATS/OpenATS/blob/master/pictures/2020-07-09_163903.png)
+![Image text](https://github.com/OpenATS/OpenATS/blob/master/pictures/20172043.jpg)
+
 
 07/21/2019
-
 先介绍下OpenATS整个系统的架构，简单的组成图可以让使用者更好的理解整个系统。
 ![Image text](https://github.com/OpenATS/OpenATS/blob/master/pictures/2020-07-13_152952.png)
 
@@ -73,8 +75,7 @@ MCU搭建：
 
 搭建过程：
 
-所有程序和代码，已经分享到我的百度网盘，链接:https://pan.baidu.com/s/1sliIPJJ 密码:pdx2    链接:https://pan.baidu.com/s/1dZcN3S 密码:7sxy
-https://pan.baidu.com/s/1nvtFfTJ 解压密码：1024
+所有程序和代码，已经分享到我的百度网盘，链接:https://pan.baidu.com/s/1sliIPJJ 密码:pdx2    备用链接：https://pan.baidu.com/s/1nvtFfTJ 解压密码：1024
 【注意，网盘中的OpenATS代码为旧版本，请使用Github上新代码烧写】
 
 
@@ -163,11 +164,5 @@ WXtrack的Easycomm协议作为控制软件的话，那么请将Arduino上传WXtr
 4、添加外部继电器模块，接口为4（天线步进电机电源控制继电器）、8（LNA电源控制继电器）。注意：继电器触发为高电平触发。
 
 5、改进串口终端显示，手动控制发送角度后会显示到串口终端，方便观察上次发送角度。更直观的分隔符。
-
-
-后续：
-
-本人水平有限，非程序员，只是个普通工人，工作繁忙。Arduino的代码也没有仔细学，只是为了达到我的目的而去补的知识
-代码如果不好，请见谅。公开代码就是让大家都能自己制作自己的追踪系统，不必花那么多钱买商业的成品。代码中已经注释的非常详细。
 
 73
