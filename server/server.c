@@ -1009,7 +1009,7 @@ void read_gps(int test)
     char gpgll_array[10] = "$GPGLL";
     char gphdt_array[10] = "$GPHDT";    //fix az angle
 	char buffer[BUFSIZE];
-    char gps_port[50];
+    char gps_port[50], gps_baudrate[20], readgps_freq[20];
 	struct timeval tv;
     fd_set rset; 
 
