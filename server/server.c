@@ -208,6 +208,7 @@ void help ()
     printf("# '-s' Satellite tracking by satellite name\n");
     printf("# '-n' Tracking satellite by NORAD number\n");
     printf("# '-r' Remote control mode\n");
+    printf("# '-m' Manual control mode\n");
     printf("# '-t' Target tracking for example UAV or Airplane\n");
     printf("# '-i' Show satellite TLE info by NORAD number\n");
     printf("# '-g  show GPS information\n");
@@ -1379,7 +1380,7 @@ void control_antenna(void *ptr)
             if(FD_ISSET(ant_s->fd,&wset));
             {
                 //printf("ant write already\n");
-                sprintf(sendbuf,"AZ:%.2f EL:%.2f",ant_angles.az, ant_angles.el);
+                sprintf(sendbuf,"AZ%.2f EL%.2f",ant_angles.az, ant_angles.el);
                 //printf("antenna angle %s\n lenis %d",sendbuf,sizeof(sendbuf));
                 serial_write(ant_s, sendbuf);
                 //printf("antenna:%s\n",sendbuf);

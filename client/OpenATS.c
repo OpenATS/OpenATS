@@ -164,32 +164,33 @@ WINDOW *create_window(int,int,int,int);
 void help ()
 {
     printf("\n");
-	printf("    +===============================================================================+\n");
-	printf("    #                  ______                         _______ _____                 #\n");
-	printf("    #                 /  __  \\                     /\\|__   __/ ____|                #\n");
-    printf("    #                |  |  |  |____   ___ _ __    /  \\  | | | (___                  #\n");
-	printf("    #                |  |  |  |  _ \\ / _ \\ '_ \\  / /\\ \\ | |  \\___ \\                 #\n");
-	printf("    #                |  |__|  | |_) |  __/ | | |/ ____ \\| |  ____) |                #\n");
-	printf("    #                 \\______/| .__/ \\___|_| |_/_/    \\_\\_| |_____/                 #\n");
-	printf("    #                         | |                                                   #\n");
-	printf("    #                         |_|      Open Auto Tracking System                    #\n");
-	printf("    # _____             _____ _____ ______ _                                        #\n");
-	printf("    #|  __ \\     /\\    / ____|_   _|  ____| |                                       #\n");
-	printf("    #| |__) |   /  \\  | (___   | | | |__  | |                                       #\n");
-	printf("    #|  _  /   / /\\ \\  \\___ \\  | | |  __| | |                                       #\n");
-	printf("    #| | \\ \\  / ____ \\ ____) |_| |_| |____| |____                                   #\n");
-	printf("    #|_|  \\_\\/_/    \\_\\_____/|_____|______|______|       www.openats.cn             #\n");
-	printf("    +===============================================================================+\n");
+	printf("+===============================================================================+\n");
+	printf("#                  ______                         _______ _____                 #\n");
+	printf("#                 /  __  \\                     /\\|__   __/ ____|                #\n");
+    printf("#                |  |  |  |____   ___ _ __    /  \\  | | | (___                  #\n");
+	printf("#                |  |  |  |  _ \\ / _ \\ '_ \\  / /\\ \\ | |  \\___ \\                 #\n");
+	printf("#                |  |__|  | |_) |  __/ | | |/ ____ \\| |  ____) |                #\n");
+	printf("#                 \\______/| .__/ \\___|_| |_/_/    \\_\\_| |_____/                 #\n");
+	printf("#                         | |                                                   #\n");
+	printf("#                         |_|      Open Auto Tracking System                    #\n");
+	printf("# _____             _____ _____ ______ _                                        #\n");
+	printf("#|  __ \\     /\\    / ____|_   _|  ____| |                                       #\n");
+	printf("#| |__) |   /  \\  | (___   | | | |__  | |                                       #\n");
+	printf("#|  _  /   / /\\ \\  \\___ \\  | | |  __| | |                                       #\n");
+	printf("#| | \\ \\  / ____ \\ ____) |_| |_| |____| |____                                   #\n");
+	printf("#|_|  \\_\\/_/    \\_\\_____/|_____|______|______|       www.openats.cn             #\n");
+	printf("+===============================================================================+\n");
 	printf("\n");
-	printf("    # use:\n");
-    printf("    # '-h' for help\n");
-    printf("    # '-u' update/download TLE file\n");
-    printf("    # '-s' Satellite tracking by satellite name\n");
-    printf("    # '-n' Tracking satellite by NORAD number\n");
-    printf("    # '-r' Remote control mode\n");
-    printf("    # '-t' Target tracking for example UAV or Airplane\n");
-    printf("    # '-i' Show satellite TLE info by NORAD number\n");
-    printf("    # '-g  show GPS information\n");
+	printf("# use:\n");
+    printf("# '-h' for help\n");
+    printf("# '-u' update/download TLE file\n");
+    printf("# '-s' Satellite tracking by satellite name\n");
+    printf("# '-n' Tracking satellite by NORAD number\n");
+    printf("# '-r' Remote control mode\n");
+    printf("# '-m' Manual control mode\n");
+    printf("# '-t' Target tracking for example UAV or Airplane\n");
+    printf("# '-i' Show satellite TLE info by NORAD number\n");
+    printf("# '-g  show GPS information\n");
 	printf("\n");
 }
 
@@ -1317,7 +1318,7 @@ void control_antenna(void *ptr)
             fix_angle(&ant_angles, &gps_info);
         }
         rc = select(ant_s->fd+1,&rset,&wset,NULL,&tv);
-        if(rc >0)
+        if(rc>0)
         {
             
             if(FD_ISSET(ant_s->fd,&rset));
@@ -1330,7 +1331,7 @@ void control_antenna(void *ptr)
             if(FD_ISSET(ant_s->fd,&wset));
             {
                 //printf("ant write already\n");
-                sprintf(sendbuf,"AZ:%.2f EL:%.2f",ant_angles.az, ant_angles.el);
+                sprintf(sendbuf,"AZ%.2f EL%.2f",ant_angles.az, ant_angles.el);
                 //printf("antenna angle %s\n lenis %d",sendbuf,sizeof(sendbuf));
                 serial_write(ant_s, sendbuf);
                 //printf("antenna:%s\n",sendbuf);
@@ -1887,8 +1888,8 @@ void hand_control()
 {
     serial *ant_s;
     float az,el;
-    char ant_port[20],c,input[50];
-    char input_az[15],input_el[15];
+    char ant_port[20], input[50];
+    char input_az[15], input_el[15], input_xy[15];
 
     ini_gets("","ant_port","dummy",ant_port,sizeof(ant_port),inifile);
     int ant_baudrate = ini_getl("", "ant_baudrate", -1, inifile);
@@ -1903,16 +1904,17 @@ void hand_control()
         //报错并结束程序
 	}
     printf(" --------------------------------------------------\n");
-    printf("     input 'AZ EL' for example : 123.49 56.73\n");
+    printf("     input 'AZ EL XY' for example : 123.49 56.73 10\n");
     printf("          input 'q' or 'exit' to exit\n");
     printf("        input 'X' or 'Y' to fix antenna\n\n\n");
     while(tracking)
     {
-        strcpy(input_az,"0");
-        strcpy(input_el,"0");
+        strcpy(input_az, "0");
+        strcpy(input_el, "0");
+        strcpy(input_xy, "0");
         printf(" ---> ");
-        fgets(input,50,stdin);
-        sscanf(input,"%s %s",input_az,input_el);
+        fgets(input, 50, stdin);
+        sscanf(input,"%s %s %s", input_az, input_el, input_xy);
         if( strncmp(input,"exit",4) == 0 || strncmp(input,"EXIT",4) == 0 ||
             strncmp(input,"q",1) == 0 || strncmp(input,"Q",1) == 0)
         {
@@ -1920,14 +1922,14 @@ void hand_control()
             tracking = 0;
             break;
         }
-        else if(strncmp(input,"X",1) == 0 || strncmp(input,"Y",1) == 0 )
+        else if(strncmp(input, "X", 1) == 0 || strncmp(input, "Y", 1) == 0 )
         {
             serial_write(ant_s, input);
-            printf("\n <FIX CMD>: %s\n",input);
+            printf("\n <FIX CMD>: %s\n", input);
         }
         else if(atof(input_az) > -150 && atof(input_az) < 450 && atof(input_el) > -10 && atof(input_el) < maxel)
         {
-            printf("\n --->[AZ:%s  EL:%s]\n\n",input_az,input_el);
+            printf("\n --->[AZ:%s  EL:%s  XY:%s]\n\n",input_az, input_el, input_xy);
             serial_write(ant_s, input);
         }else{
             printf("\n [Are you kidding me?]\n");
@@ -1983,7 +1985,7 @@ int main(int argc,char * const *argv)
             case 'u':        // update tle data
                 mode = 4;
                 break;
-            case 'm':        //hand control
+            case 'm':        //manual control
                 mode = 5;   
                 break;
             case 'h':        //help page
