@@ -253,7 +253,7 @@ String usbdata = "";
 
 
 //自动追踪开始
- if ( usbdata.length() > 11 )
+ if ( usbdata.length() > 4 && usbdata.startsWith("A") )
    {
       const char *usb=usbdata.c_str();                                 //将string数据转成字符串数据
       //Serial.println(usb);
