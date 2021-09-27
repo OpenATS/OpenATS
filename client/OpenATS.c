@@ -156,6 +156,7 @@ int sat_tracking(orbit_t *orb);
 void target_angle(s_geogcord *ground,s_geogcord *obs);
 int target_tracking();
 void hand_control();
+void go_home();
 void equatorial2horizontal(double mjd,s_geogcord s,double ra,double de,double *az,double *el);
 WINDOW *create_window(int,int,int,int);
 
@@ -190,7 +191,8 @@ void help ()
     printf("# '-m' Manual control mode\n");
     printf("# '-t' Target tracking for example UAV or Airplane\n");
     printf("# '-i' Show satellite TLE info by NORAD number\n");
-    printf("# '-g  show GPS information\n");
+    printf("# '-g' show GPS information\n");
+    printf("# '-p' Parking antenna(go home)\n");
 	printf("\n");
 }
 
@@ -227,7 +229,7 @@ void print_orb(orbit_t *orb)
 void tleupdate(void *ptr)
 {
     //update tle data every 4 hours
-    while (tracking)
+    while(tracking)
     {
         usleep(14400000000);
         update = 1;
@@ -420,7 +422,7 @@ double date2mjd(int year,int month,double day)
     int a,b;
     double jd;
 
-    if (month<3)
+    if(month<3)
     {
         year--;
         month+=12;
@@ -429,9 +431,9 @@ double date2mjd(int year,int month,double day)
     a=floor(year/100.);
     b=2.-a+floor(a/4.);
 
-    if (year<1582) b=0;
-    if (year==1582 && month<10) b=0;
-    if (year==1582 && month==10 && day<=4) b=0;
+    if(year<1582) b=0;
+    if(year==1582 && month<10) b=0;
+    if(year==1582 && month==10 && day<=4) b=0;
 
     jd=floor(365.25*(year+4716))+floor(30.6001*(month+1))+day+b-1524.5;
 
@@ -441,7 +443,7 @@ double date2mjd(int year,int month,double day)
 double modulo(double x,double y)
 {
     x=fmod(x,y);
-    if (x < 0.0) x += y;
+    if(x < 0.0) x += y;
 
     return x;
 }
@@ -614,7 +616,7 @@ long search_satno(char *satname)
     st2 = line2;
 
     //open TLE file
-	if ((tle_fd = fopen(tlefile,"r")) == NULL)     //open with read only
+	if((tle_fd = fopen(tlefile,"r")) == NULL)     //open with read only
 	{
         printf("can't open TLE file! please check your cmd or file\n");
 		exit(0);
@@ -644,7 +646,7 @@ long search_satno(char *satname)
     //printf("zeroone is %s\n",zero_one);
     //printf("zerotwo is %s\n",zero_two);
     sprintf(zeroname,"%s %s %s",zero_one,zero_two,zero_three);          
-    while (strncmp(zeroname,satname,strlen(satname)) != 0)
+    while(strncmp(zeroname,satname,strlen(satname)) != 0)
     {
         do{ 
             if(fgets(line0,ST_SIZE,tle_fd) == NULL)
@@ -771,7 +773,7 @@ void read_gpsd(int test)
 
     int readgpsd_freq = ini_getl("", "readgpsd_freq", -1, inifile);
 
-    if (gps_open(GPSD_SHARED_MEMORY, NULL, &gpsdata) != 0)
+    if(gps_open(GPSD_SHARED_MEMORY, NULL, &gpsdata) != 0)
     {
 	    printf("gpsd not running\n");
         tracking = 0;
@@ -845,7 +847,7 @@ void read_gps(int test)
     ini_gets("", "readgps_freq","dummy", readgps_freq, sizeof(readgps_freq), inifile);
     unsigned int readgps = atoi(readgps_freq)*1000;
 
-	if (serial_open(&gps_s, gps_port, gps_baudrate) != 0){
+	if(serial_open(&gps_s, gps_port, gps_baudrate) != 0){
 		printf("open gps port error\n");
         //结束此进程
 	}
@@ -1104,7 +1106,7 @@ void send_message(void *ptr)
     }
 
     int flags;
-    if ((flags = fcntl(socket_fd, F_GETFL, NULL)) < 0)
+    if((flags = fcntl(socket_fd, F_GETFL, NULL)) < 0)
         printf("flag error\n");
     if(fcntl(socket_fd, F_SETFL, flags | O_NONBLOCK) < 0)
         printf("send nonblock error\n");
@@ -1199,7 +1201,7 @@ void receive_message(void *ptr)
     }
 
     int flags;
-    if ((flags = fcntl(socket_fd, F_GETFL, NULL)) < 0)
+    if((flags = fcntl(socket_fd, F_GETFL, NULL)) < 0)
         printf("flag error\n");
     if(fcntl(socket_fd, F_SETFL, flags | O_NONBLOCK) < 0)
         printf("receive nonblock error\n");
@@ -1408,7 +1410,7 @@ int remote_control()
 
     //printf("tcp_client_connect already success\n");
     int flags;
-    if ((flags = fcntl(socket_fd, F_GETFL, NULL)) < 0)
+    if((flags = fcntl(socket_fd, F_GETFL, NULL)) < 0)
         printf("flag error\n");
     if(fcntl(socket_fd, F_SETFL, flags | O_NONBLOCK) < 0)
         printf("send nonblock error\n");
@@ -1568,7 +1570,7 @@ int sat_tracking(orbit_t *orb)
 
     //mvwprintw(track_win,LOK_Y+6,LOK_X+1,"location lat:%.4f  lng:%.4f   alt:%.2f\n",location.lat,location.lng,location.alt);
     
-    if (init_sgdp4(orb) == SGDP4_ERROR)           //check sgp4
+    if(init_sgdp4(orb) == SGDP4_ERROR)           //check sgp4
     {
         //printf("sgdp4 error\n");
         return -1;  
@@ -1610,7 +1612,7 @@ int sat_tracking(orbit_t *orb)
         {
             pthread_kill(&send_tid,SIGKILL);        //kill send_tid
             int i = pthread_kill(&send_tid, 0);     //make sure send_tid life
-            if( i == ESRCH)
+            if(i == ESRCH)
             {
                 //printf("no send message, now build\n");
                 pthread_create(&send_tid, NULL, (void*) &send_message, NULL);
@@ -1714,13 +1716,13 @@ int target_tracking()
 
     /////////////////////////////START OF TARGET TRACKING LOOP//////////////////////////////////
     //target_tracking loop
-    while (tracking)
+    while(tracking)
     {
         if(tcp_error)       //connect error exit stop this thread
         {
             pthread_kill(&send_tid,SIGKILL);        //kill send_tid
             int i = pthread_kill(&send_tid, 0);     //make sure send_tid life
-            if( i == ESRCH)
+            if(i == ESRCH)
             {
                 printf("no send message, now build\n");
                 pthread_create(&send_tid, NULL, (void*) &send_message, NULL);
@@ -1873,12 +1875,12 @@ void fix_angle (s_azelcord *ant_angles,gpsinfo *gpsdata)
 {
     float a;
 
-    if (ant_angles->az < gpsdata->offset)
+    if(ant_angles->az < gpsdata->offset)
         a = -(gpsdata->offset - ant_angles->az);
     else a = (ant_angles->az - gpsdata->offset);
     
-    if (a < -180) ant_angles->az = (360 + a);
-    else if (a > 180) ant_angles->az = -(360 - a);
+    if(a < -180) ant_angles->az = (360 + a);
+    else if(a > 180) ant_angles->az = -(360 - a);
     else ant_angles->az = a;
     return;
 }
@@ -1898,7 +1900,7 @@ void hand_control()
 
     printf("Ant port is%s\n",ant_port);
 
-    if (serial_open(&ant_s, ant_port, ant_baudrate) != 0)
+    if(serial_open(&ant_s, ant_port, ant_baudrate) != 0)
     {
 		printf("open antenna port error\n");
         //报错并结束程序
@@ -1915,7 +1917,7 @@ void hand_control()
         printf(" ---> ");
         fgets(input, 50, stdin);
         sscanf(input,"%s %s %s", input_az, input_el, input_xy);
-        if( strncmp(input,"exit",4) == 0 || strncmp(input,"EXIT",4) == 0 ||
+        if(strncmp(input,"exit",4) == 0 || strncmp(input,"EXIT",4) == 0 ||
             strncmp(input,"q",1) == 0 || strncmp(input,"Q",1) == 0)
         {
             printf(" tracking stop\n");
@@ -1946,10 +1948,29 @@ void hand_control()
     }else{
         printf(" can't control antenna go home\n");
     }
-
     return;
 }
 
+void go_home()
+{
+    serial *ant_s;
+    char ant_port[20];
+    char input[10];
+
+    ini_gets("","ant_port","dummy",ant_port,sizeof(ant_port),inifile);
+    int ant_baudrate = ini_getl("", "ant_baudrate", -1, inifile);
+    
+    if(serial_open(&ant_s, ant_port, ant_baudrate) != 0)
+    {
+		printf("open antenna port error\n");
+        //报错并结束程序
+	}
+
+    bzero(input,sizeof(input));
+    serial_write(ant_s, input);
+    printf("Anteanna going home...");
+    return;
+}
 
 /////////////////////////////////STRAT OF MAIN/////////////////////////////////
 
@@ -2001,6 +2022,9 @@ int main(int argc,char * const *argv)
                 satno = atoi(optarg);
                 mode = 7;
                 break;
+            case 'p':        //control antenna go home
+                go_home();
+                break;
             default:        
                 help();
                 break;
@@ -2050,7 +2074,7 @@ int main(int argc,char * const *argv)
         refresh();
         
 
-        if (target_tracking() < 0)
+        if(target_tracking() < 0)
         {
             printf("target_tracking error\n");
             exit(0);
@@ -2060,19 +2084,19 @@ int main(int argc,char * const *argv)
     else if(mode == 2)         //tracking by satname
 	{
         //open TLE file
-	    if ((tlefile_fd = fopen(tlefile,"r")) == NULL)     //open with read only
+	    if((tlefile_fd = fopen(tlefile,"r")) == NULL)     //open with read only
 	    {
             printf("can't open TLE file! please check your cmd or file\n");
 		    exit(0);
         }
 	    //printf("open TLE file success\n");
-        if ((satno = search_satno(satname)) < 0)
+        if((satno = search_satno(satname)) < 0)
         {
             printf("can't find the satno by name: %s\n",satname);
             exit(0);
         }
         //printf("SATNAME:%s   NORAD:%ld\n",satname,satno);
-        if (read_twoline(tlefile_fd,satno,&orb,satname) < 0)
+        if(read_twoline(tlefile_fd,satno,&orb,satname) < 0)
         {
             printf("can't find the satellite: %s from TLE file\n",satname);
             exit(0);
@@ -2085,7 +2109,7 @@ int main(int argc,char * const *argv)
         refresh();
         
         
-        if (sat_tracking(&orb) < 0)
+        if(sat_tracking(&orb) < 0)
         {
             printf("sat_tracking error\n");
             exit(0);
@@ -2158,7 +2182,7 @@ int main(int argc,char * const *argv)
 		fclose(tlefile_fd);
         print_orb(&orb);
     }
-    else if( mode == 8)     //gps test
+    else if(mode == 8)     //gps test
     {
         ini_gets("", "gpsd","dummy", gpsd, sizeof(gpsd), inifile);    
         if(gpsd)
